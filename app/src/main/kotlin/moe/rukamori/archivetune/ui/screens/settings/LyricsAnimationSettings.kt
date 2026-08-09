@@ -108,42 +108,33 @@ fun LyricsAnimationSettings(navController: NavController) {
                 item {
                     SliderPreference(
                         title = { Text(stringResource(R.string.bounce_amplitude)) },
-                        description =
-                            stringResource(
-                                R.string.bounce_amplitude_desc,
-                                (bounceFactor * 100).toInt(),
-                            ),
                         icon = { Icon(painterResource(R.drawable.animation), null) },
-                        value = (bounceFactor * 100).toInt(),
-                        onValueChange = { onBounceFactorChange(it / 100f) },
+                        value = bounceFactor,
+                        onValueChange = onBounceFactorChange,
+                        valueRange = 0f..2f,
+                        valueText = { "${(it * 100).toInt()}%" },
                     )
                 }
 
                 item {
                     SliderPreference(
                         title = { Text(stringResource(R.string.glow_intensity)) },
-                        description =
-                            stringResource(
-                                R.string.glow_intensity_desc,
-                                (glowFactor * 100).toInt(),
-                            ),
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        value = (glowFactor * 100).toInt(),
-                        onValueChange = { onGlowFactorChange(it / 100f) },
+                        value = glowFactor,
+                        onValueChange = onGlowFactorChange,
+                        valueRange = 0f..2f,
+                        valueText = { "${(it * 100).toInt()}%" },
                     )
                 }
 
                 item {
                     SliderPreference(
-                        title = { Text(stringResource(R.string.fill_transition_smoothness)) },
-                        description =
-                            stringResource(
-                                R.string.fill_transition_smoothness_desc,
-                                fillTransitionWidth.toInt(),
-                            ),
+                        title = { Text(stringResource(R.string.animation_tuning)) },
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        value = fillTransitionWidth.toInt(),
-                        onValueChange = { onFillTransitionWidthChange(it.toFloat()) },
+                        value = fillTransitionWidth,
+                        onValueChange = onFillTransitionWidthChange,
+                        valueRange = 1f..20f,
+                        valueText = { "${it.toInt()} px" },
                     )
                 }
             }
