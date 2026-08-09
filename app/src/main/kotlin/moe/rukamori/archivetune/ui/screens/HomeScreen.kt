@@ -11,6 +11,8 @@ import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -40,6 +43,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -140,9 +145,6 @@ fun HomeScreen(
         }
     }
 
-    // Attach the shell's floating-header connection inside this screen (Step 2b) so
-    // Home's scroll/fling writes Home's own header state and can't leak into another
-    // route's header. Bubbling reaches this ancestor Box before any shell connection.
     Box(
         modifier =
             Modifier
@@ -220,7 +222,13 @@ private fun HomeStatePane(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp),
+            modifier = Modifier
+                .padding(32.dp)
+                // بطاقة زجاجية لحالة التحميل/الخطأ
+                .clip(RoundedCornerShape(24.dp))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.35f))
+                .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                .padding(24.dp),
         ) {
             if (showLoadingIndicator) {
                 LoadingIndicator()
@@ -277,19 +285,22 @@ private fun HomeContent(
             ?.remoteQuickPicks
     val tonalStart = MaterialTheme.colorScheme.primaryContainer
     val tonalMiddle = MaterialTheme.colorScheme.secondaryContainer
+
     Box(modifier = modifier.fillMaxSize()) {
         if (uiState.showTonalBackdrop) {
+            // خلفية زجاجية مع Blur وتدرج لوني ضبابي
             Box(
                 modifier =
                     Modifier
                         .fillMaxWidth()
                         .height(430.dp)
                         .align(Alignment.TopCenter)
+                        .blur(25.dp) // زيادة الضبابية لمنح مظهر الزجاج المصقول
                         .drawWithCache {
                             val brush =
                                 Brush.verticalGradient(
-                                    0f to tonalStart.copy(alpha = 0.30f),
-                                    0.42f to tonalMiddle.copy(alpha = 0.14f),
+                                    0f to tonalStart.copy(alpha = 0.40f),
+                                    0.50f to tonalMiddle.copy(alpha = 0.20f),
                                     1f to Color.Transparent,
                                 )
                             onDrawBehind { drawRect(brush) }
@@ -361,7 +372,9 @@ private fun HomeContent(
                                 menuState = menuState,
                                 haptic = haptic,
                                 scope = scope,
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier
+                                    .animateItem()
+                                    .glassCard(), // إضافة التأثير الزجاجي للقسم
                             )
                         }
                     } else if (uiState.quickPicks.isNotEmpty()) {
@@ -387,7 +400,9 @@ private fun HomeContent(
                                 playerConnection = playerConnection,
                                 menuState = menuState,
                                 haptic = haptic,
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier
+                                    .animateItem()
+                                    .glassCard(), // إضافة التأثير الزجاجي
                             )
                         }
                     }
@@ -456,7 +471,11 @@ private fun HomeContent(
                             key = "home_account_playlists",
                             contentType = "media_shelf",
                         ) {
-                            Column(modifier = Modifier.animateItem()) {
+                            Column(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .glassCard()
+                            ) {
                                 AccountPlaylistsTitle(
                                     accountName = uiState.accountName,
                                     accountImageUrl = uiState.accountImageUrl,
@@ -590,6 +609,19 @@ private fun HomeContent(
         }
     }
 }
+
+/**
+ * دالة امتداد (Extension Function) لتطبيق الطابع الزجاجي (Glassmorphism) بسهولة على أي مكون
+ */
+private fun Modifier.glassCard(): Modifier = this
+    .padding(horizontal = 8.dp, vertical = 4.dp)
+    .clip(RoundedCornerShape(20.dp))
+    .background(Color.White.copy(alpha = 0.08f))
+    .border(
+        width = 1.dp,
+        color = Color.White.copy(alpha = 0.18f),
+        shape = RoundedCornerShape(20.dp)
+    )
 
 private fun androidx.compose.foundation.lazy.LazyListScope.sectionSpacer(key: String) {
     item(
