@@ -342,10 +342,11 @@ fun LyricsScreen(
 
     BackHandler(enabled = backHandlerEnabled, onBack = onBackClick)
 
-    Box(
+        Box(
         modifier =
             modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .graphicsLayer { clip = true },
     ) {
         LyricsScreenBackground(
             style = lyricsBackground,
@@ -596,15 +597,18 @@ private fun AppleMusicBackground(
             label = "lyrics-apple-background",
         ) { thumbnailUrl ->
             if (thumbnailUrl != null) {
-                AsyncImage(
+                                AsyncImage(
                     model = thumbnailUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .blur(46.dp)
-                            .alpha(0.62f),
+                            .graphicsLayer {
+                                alpha = 0.62f
+                                renderEffect = null
+                            }
+                            .blur(46.dp),
                 )
             }
         }
@@ -807,13 +811,16 @@ private fun AppleMusicControls(
     foregroundColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    val position = positionProvider()
+        val position = positionProvider()
     val duration = durationProvider()
-    val hasDuration = duration != C.TIME_UNSET && duration > 0L
-    val safeDuration = if (hasDuration) duration else 1L
-    val currentPosition = (sliderPosition ?: position).coerceIn(0L, safeDuration)
-    val remainingPosition = (safeDuration - currentPosition).coerceAtLeast(0L)
 
+    val (hasDuration, safeDuration, currentPosition, remainingPosition) = remember(position, duration, sliderPosition) {
+        val hasDur = duration != C.TIME_UNSET && duration > 0L
+        val safeDur = if (hasDur) duration else 1L
+        val currentPos = (sliderPosition ?: position).coerceIn(0L, safeDur)
+        val remainingPos = (safeDur - currentPos).coerceAtLeast(0L)
+        Tuple4(hasDur, safeDur, currentPos, remainingPos)
+    }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
