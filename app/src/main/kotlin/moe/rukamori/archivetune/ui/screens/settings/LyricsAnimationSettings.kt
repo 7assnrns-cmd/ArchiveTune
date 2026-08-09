@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -115,9 +114,8 @@ fun LyricsAnimationSettings(navController: NavController) {
                                 (bounceFactor * 100).toInt(),
                             ),
                         icon = { Icon(painterResource(R.drawable.animation), null) },
-                        value = bounceFactor,
-                        onValueChange = onBounceFactorChange,
-                        valueRange = 0f..2f,
+                        value = (bounceFactor * 100).toInt(),
+                        onValueChange = { onBounceFactorChange(it / 100f) },
                     )
                 }
 
@@ -130,9 +128,8 @@ fun LyricsAnimationSettings(navController: NavController) {
                                 (glowFactor * 100).toInt(),
                             ),
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        value = glowFactor,
-                        onValueChange = onGlowFactorChange,
-                        valueRange = 0f..2f,
+                        value = (glowFactor * 100).toInt(),
+                        onValueChange = { onGlowFactorChange(it / 100f) },
                     )
                 }
 
@@ -145,9 +142,8 @@ fun LyricsAnimationSettings(navController: NavController) {
                                 fillTransitionWidth.toInt(),
                             ),
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        value = fillTransitionWidth,
-                        onValueChange = onFillTransitionWidthChange,
-                        valueRange = 2f..24f,
+                        value = fillTransitionWidth.toInt(),
+                        onValueChange = { onFillTransitionWidthChange(it.toFloat()) },
                     )
                 }
             }
