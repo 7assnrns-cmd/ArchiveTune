@@ -109,10 +109,8 @@ fun LyricsAnimationSettings(navController: NavController) {
                     SliderPreference(
                         title = { Text(stringResource(R.string.bounce_amplitude)) },
                         icon = { Icon(painterResource(R.drawable.animation), null) },
-                        value = bounceFactor,
-                        onValueChange = onBounceFactorChange,
-                        valueRange = 0f..2f,
-                        valueText = { "${(it * 100).toInt()}%" },
+                        value = (bounceFactor * 100).toInt(),
+                        onValueChange = { onBounceFactorChange(it / 100f) },
                     )
                 }
 
@@ -120,10 +118,8 @@ fun LyricsAnimationSettings(navController: NavController) {
                     SliderPreference(
                         title = { Text(stringResource(R.string.glow_intensity)) },
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        value = glowFactor,
-                        onValueChange = onGlowFactorChange,
-                        valueRange = 0f..2f,
-                        valueText = { "${(it * 100).toInt()}%" },
+                        value = (glowFactor * 100).toInt(),
+                        onValueChange = { onGlowFactorChange(it / 100f) },
                     )
                 }
 
@@ -131,10 +127,8 @@ fun LyricsAnimationSettings(navController: NavController) {
                     SliderPreference(
                         title = { Text(stringResource(R.string.animation_tuning)) },
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        value = fillTransitionWidth,
-                        onValueChange = onFillTransitionWidthChange,
-                        valueRange = 1f..20f,
-                        valueText = { "${it.toInt()} px" },
+                        value = fillTransitionWidth.toInt(),
+                        onValueChange = { onFillTransitionWidthChange(it.toFloat()) },
                     )
                 }
             }
