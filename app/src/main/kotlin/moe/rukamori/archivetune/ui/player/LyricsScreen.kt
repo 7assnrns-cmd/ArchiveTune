@@ -308,14 +308,20 @@ fun LyricsScreen(
         gradientColorsCache[thumbnailUrl] = gradientColors
     }
 
-    LaunchedEffect(player, playbackState, mediaMetadata.id) {
+        LaunchedEffect(player, playbackState, mediaMetadata.id) {
         if (playbackState != STATE_READY && playbackState != STATE_BUFFERING) return@LaunchedEffect
         while (isActive) {
-            positionState.longValue = player.currentPosition.coerceAtLeast(0L)
-            durationState.longValue = player.duration
+            val currentPos = player.currentPosition.coerceAtLeast(0L)
+            if (positionState.longValue != currentPos) {
+                positionState.longValue = currentPos
+            }
+            if (durationState.longValue != player.duration) {
+                durationState.longValue = player.duration
+            }
             delay(250)
         }
     }
+
 
     val showLyricsMenu = {
         menuState.show {
