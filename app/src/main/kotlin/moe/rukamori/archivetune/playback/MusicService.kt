@@ -1059,27 +1059,33 @@ class MusicService :
             reportException(e)
         }
 
-        localPlayer =
-            ExoPlayer
-                .Builder(this)
-                .setMediaSourceFactory(createMediaSourceFactory())
-                .setRenderersFactory(createRenderersFactory())
-                .setLoadControl(createPrimaryLoadControl())
-                .setTrackSelector(DefaultTrackSelector(this, SafeTrackSelectionFactory()))
-                .setHandleAudioBecomingNoisy(true)
-                .setWakeMode(C.WAKE_MODE_NETWORK)
-                .setAudioAttributes(
-                    playbackAudioAttributes(),
-                    false,
-                ).setSeekBackIncrementMs(5000)
-                .setSeekForwardIncrementMs(5000)
-                .setDeviceVolumeControlEnabled(true)
+        LocalPlayer =
+    ExoPlayer
+        .Builder(this)
+        .setMediaSourceFactory(createMediaSourceFactory())
+        .setRenderersFactory(createRenderersFactory())
+        .setLoadControl(
+            DefaultLoadControl.Builder()
+                .setBackBuffer(5000, true) // الاحتفاظ بـ 5 ثوانٍ في الذاكرة RAM لمنع التقطيع عند الترجيع
+                .setBufferDurationsMs(1000, 5000, 250, 250) // تقليل وقت البفر بعد الترجيع
                 .build()
-                .apply {
-                    addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
-                    addListener(audioEffectPlayerListener)
-                    setOffloadEnabled(false)
-                }
+        )
+        .setTrackSelector(DefaultTrackSelector(this, SafeTrackSelectionFactory()))
+        .setHandleAudioBecomingNoisy(true)
+        .setWakeMode(C.WAKE_MODE_NETWORK)
+        .setAudioAttributes(
+            playbackAudioAttributes(),
+            false,
+        ).setSeekBackIncrementMs(5000)
+        .setSeekForwardIncrementMs(5000)
+        .setDeviceVolumeControlEnabled(true)
+        .build()
+        .apply {
+            addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
+            addListener(audioEffectPlayerListener)
+            setOffloadEnabled(false)
+            setSeekParameters(SeekParameters.PREVIOUS_SYNC) // تسريع الاستجابة للترجيع
+        }
         castPlaybackRepository = CastPlaybackRepositoryLocator.get(this)
         player =
             castPlaybackRepository
