@@ -124,6 +124,8 @@ import moe.rukamori.archivetune.utils.makeTimeString
 import moe.rukamori.archivetune.utils.rememberEnumPreference
 import moe.rukamori.archivetune.utils.rememberPreference
 import kotlin.coroutines.cancellation.CancellationException
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.derivedStateOf
 
 private val AppleMusicFallbackGradient =
     listOf(
