@@ -8,21 +8,28 @@
 package moe.rukamori.archivetune.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -79,6 +86,14 @@ fun BrowseScreen(
                     coroutineScope = coroutineScope,
                     modifier =
                         Modifier
+                            .padding(4.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.White.copy(alpha = 0.06f))
+                            .border(
+                                width = 1.dp,
+                                color = Color.White.copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
                             .combinedClickable(
                                 onClick = {
                                     when (item) {
@@ -147,6 +162,10 @@ fun BrowseScreen(
 
     TopAppBar(
         title = { Text(title ?: "") },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White.copy(alpha = 0.08f),
+            scrolledContainerColor = Color.White.copy(alpha = 0.15f)
+        ),
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,
@@ -158,5 +177,6 @@ fun BrowseScreen(
                 )
             }
         },
+        scrollBehavior = scrollBehavior,
     )
 }
