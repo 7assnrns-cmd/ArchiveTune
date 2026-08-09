@@ -549,7 +549,7 @@ fun UpdateScreen(
                     start = 16.dp,
                     top = 12.dp,
                     end = 16.dp,
-                    bottom = SettingsDimensions.ScreenBottomPadding,
+                    bottom = 16.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
