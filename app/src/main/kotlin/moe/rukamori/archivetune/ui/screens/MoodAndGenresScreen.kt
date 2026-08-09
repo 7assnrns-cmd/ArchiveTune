@@ -8,8 +8,10 @@
 package moe.rukamori.archivetune.ui.screens
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,10 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -152,49 +152,29 @@ fun MoodAndGenresButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val base = remember(stripeColor) { Color(stripeColor) }
+    val baseColor = remember(stripeColor) { Color(stripeColor) }
     val artworkUrl = rememberMoodAndGenresArtworkUrl(endpoint)
     val artworkModel = rememberMoodAndGenresArtworkModel(endpoint = endpoint, artworkUrl = artworkUrl)
-    val cardStart =
-        remember(base, colorScheme.primaryContainer) {
-            lerp(base, colorScheme.primaryContainer, 0.18f)
-        }
-    val cardEnd =
-        remember(base, colorScheme.surfaceContainerHighest) {
-            lerp(base, colorScheme.surfaceContainerHighest, 0.34f)
-        }
-    val coverStart =
-        remember(base, colorScheme.surface) {
-            lerp(base, colorScheme.surface, 0.28f)
-        }
-    val coverEnd =
-        remember(base, colorScheme.scrim) {
-            lerp(base, colorScheme.scrim, 0.2f)
-        }
-    val cardBrush =
-        remember(cardStart, cardEnd) {
+
+    // تدرج زجاجي يعتمد على اللون الأساسي للعنصر مع الشفافية
+    val glassBrush =
+        remember(baseColor) {
             Brush.linearGradient(
-                colors = listOf(cardStart, cardEnd),
-                start = Offset.Zero,
-                end = Offset(900f, 650f),
+                colors = listOf(
+                    baseColor.copy(alpha = 0.28f),
+                    baseColor.copy(alpha = 0.08f),
+                    Color.White.copy(alpha = 0.05f),
+                ),
             )
         }
-    val coverBrush =
-        remember(coverStart, coverEnd) {
-            Brush.linearGradient(
-                colors = listOf(coverStart, coverEnd),
-                start = Offset.Zero,
-                end = Offset(360f, 360f),
-            )
-        }
+
     val textScrimBrush =
-        remember(colorScheme.scrim) {
+        remember {
             Brush.horizontalGradient(
                 colors =
                     listOf(
-                        colorScheme.scrim.copy(alpha = 0.38f),
-                        colorScheme.scrim.copy(alpha = 0.18f),
+                        Color.Black.copy(alpha = 0.45f),
+                        Color.Black.copy(alpha = 0.15f),
                         Color.Transparent,
                     ),
             )
@@ -207,13 +187,17 @@ fun MoodAndGenresButton(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier =
             modifier
-                .height(MoodAndGenresButtonHeight),
+                .height(MoodAndGenresButtonHeight)
+                .border(
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
+                    shape = MoodAndGenresButtonShape,
+                ),
     ) {
         Box(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(cardBrush),
+                    .background(glassBrush),
         ) {
             Box(
                 modifier =
@@ -222,7 +206,11 @@ fun MoodAndGenresButton(
                         .padding(top = 10.dp, end = 12.dp)
                         .size(MoodAndGenresCoverSize)
                         .clip(MoodAndGenresCoverShape)
-                        .background(coverBrush),
+                        .background(Color.White.copy(alpha = 0.08f))
+                        .border(
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.20f)),
+                            shape = MoodAndGenresCoverShape,
+                        ),
             ) {
                 if (artworkModel != null) {
                     AsyncImage(
@@ -241,7 +229,7 @@ fun MoodAndGenresButton(
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Black),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -281,7 +269,6 @@ private fun rememberMoodAndGenresArtworkUrl(endpoint: BrowseEndpoint?): String? 
                 return@produceState
             }
 
-            // Clear a previously remembered value before resolving an expired entry.
             value = null
 
             val persistedEntry =
