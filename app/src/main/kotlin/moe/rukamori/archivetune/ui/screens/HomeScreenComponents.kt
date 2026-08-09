@@ -12,6 +12,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.focusable
@@ -179,13 +180,20 @@ fun HomeCategoryChips(
                 shapes = FilterChipDefaults.shapes(),
                 colors =
                     FilterChipDefaults.filterChipColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.78f),
+                        containerColor = Color.White.copy(alpha = 0.08f),
                         labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.94f),
-                        selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        selectedLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
+                        selectedLabelColor = Color.White,
+                        selectedLeadingIconColor = Color.White,
                     ),
-                border = null,
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = selected,
+                    borderColor = Color.White.copy(alpha = 0.12f),
+                    selectedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.40f),
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.dp
+                ),
             )
         }
     }
@@ -310,7 +318,7 @@ fun QuickPicksSection(
                                 .maskBorder(
                                     BorderStroke(
                                         1.dp,
-                                        MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.72f),
+                                        Color.White.copy(alpha = 0.20f),
                                     ),
                                     MaterialTheme.shapes.extraLarge,
                                 ).focusable()
@@ -354,8 +362,8 @@ fun QuickPicksSection(
                                     .background(
                                         Brush.verticalGradient(
                                             0f to Color.Transparent,
-                                            0.48f to Color.Black.copy(alpha = 0.08f),
-                                            1f to Color.Black.copy(alpha = 0.84f),
+                                            0.48f to Color.Black.copy(alpha = 0.12f),
+                                            1f to Color.Black.copy(alpha = 0.88f),
                                         ),
                                     ),
                         )
@@ -659,14 +667,24 @@ fun SpeedDialSection(
         }
     val motionScheme = MaterialTheme.motionScheme
 
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        shape = MaterialTheme.shapes.large,
-        tonalElevation = 1.dp,
+    Box(
         modifier =
             modifier
                 .padding(horizontal = 12.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.12f),
+                            Color.White.copy(alpha = 0.04f)
+                        )
+                    )
+                )
+                .border(
+                    BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
+                    shape = MaterialTheme.shapes.large
+                )
     ) {
         Column(modifier = Modifier.padding(vertical = 12.dp)) {
             BoxWithConstraints(
@@ -825,7 +843,7 @@ fun SpeedDialSection(
                                 if (isSelected) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
-                                    MaterialTheme.colorScheme.surfaceContainerHighest
+                                    Color.White.copy(alpha = 0.20f)
                                 },
                             animationSpec = motionScheme.defaultEffectsSpec(),
                             label = "speedDialDotColor",
@@ -856,28 +874,36 @@ private fun SpeedDialRandomTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        shape = MaterialTheme.shapes.large,
-        tonalElevation = 2.dp,
+    Box(
         modifier =
             modifier
                 .aspectRatio(1f)
+                .clip(MaterialTheme.shapes.large)
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.15f),
+                            Color.White.copy(alpha = 0.05f)
+                        )
+                    )
+                )
+                .border(
+                    BorderStroke(1.dp, Color.White.copy(alpha = 0.18f)),
+                    shape = MaterialTheme.shapes.large
+                )
                 .combinedClickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                repeat(3) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape,
-                        modifier = Modifier.size(18.dp),
-                    ) {}
-                }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            repeat(3) {
+                Surface(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape,
+                    modifier = Modifier.size(18.dp),
+                ) {}
             }
         }
     }
@@ -1404,7 +1430,8 @@ fun AccountPlaylistsTitle(
                     modifier =
                         Modifier
                             .size(ListThumbnailSize)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .border(1.dp, Color.White.copy(alpha = 0.20f), CircleShape),
                 )
             } else {
                 Icon(
@@ -1446,7 +1473,8 @@ fun SimilarRecommendationsTitle(
                         modifier =
                             Modifier
                                 .size(ListThumbnailSize)
-                                .clip(shape),
+                                .clip(shape)
+                                .border(1.dp, Color.White.copy(alpha = 0.20f), shape),
                     )
                 }
             },
@@ -1498,7 +1526,8 @@ fun HomePageSectionTitle(
                         modifier =
                             Modifier
                                 .size(ListThumbnailSize)
-                                .clip(shape),
+                                .clip(shape)
+                                .border(1.dp, Color.White.copy(alpha = 0.20f), shape),
                     )
                 }
             },
