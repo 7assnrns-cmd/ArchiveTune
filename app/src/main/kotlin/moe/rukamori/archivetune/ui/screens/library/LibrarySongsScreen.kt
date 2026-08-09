@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -83,7 +84,6 @@ import moe.rukamori.archivetune.ui.component.ExpressivePullToRefreshBox
 import moe.rukamori.archivetune.ui.component.ItemThumbnail
 import moe.rukamori.archivetune.ui.component.LocalMenuState
 import moe.rukamori.archivetune.ui.menu.SongMenu
-import moe.rukamori.archivetune.ui.screens.library.rememberArtworkGradient
 import moe.rukamori.archivetune.ui.utils.ItemWrapper
 import moe.rukamori.archivetune.utils.makeTimeString
 import moe.rukamori.archivetune.utils.rememberEnumPreference
@@ -121,7 +121,6 @@ fun LibrarySongsScreen(
     var filter by rememberEnumPreference(SongFilterKey, SongFilter.LIKED)
     val lazyListState = rememberLazyListState()
 
-    // Issue 2: player-aware bottom padding so content is never hidden behind nav bar + miniplayer
     val playerAwareBottomPadding =
         LocalPlayerAwareWindowInsets.current
             .only(WindowInsetsSides.Bottom)
@@ -206,7 +205,6 @@ fun LibrarySongsScreen(
 
                 // Dropdown sort trigger
                 var showSortMenu by remember { mutableStateOf(false) }
-                // Issue 4 fix: A-Z label shows ascending direction arrow
                 val currentSortLabel =
                     when (sortType) {
                         SongSortType.CREATE_DATE -> {
@@ -264,19 +262,14 @@ fun LibrarySongsScreen(
                             val label =
                                 when (type) {
                                     SongSortType.CREATE_DATE -> stringResource(R.string.recently_added)
-
-                                    // Issue 4: select NAME always sets ascending (A→Z) by default
                                     SongSortType.NAME -> stringResource(R.string.sort_a_to_z)
-
                                     SongSortType.ARTIST -> stringResource(R.string.sort_artist)
-
                                     SongSortType.PLAY_TIME -> stringResource(R.string.most_played_sort)
                                 }
                             DropdownMenuItem(
                                 text = { Text(label) },
                                 onClick = {
                                     onSortTypeChange(type)
-                                    // A-Z sort should default to ascending
                                     if (type == SongSortType.NAME) onSortDescendingChange(false)
                                     showSortMenu = false
                                 },
@@ -318,7 +311,6 @@ fun LibrarySongsScreen(
 
             LazyColumn(
                 state = lazyListState,
-                // Issue 2: use player-aware window insets for bottom padding
                 contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = playerAwareBottomPadding),
                 verticalArrangement = Arrangement.spacedBy(0.dp),
                 modifier = Modifier.fillMaxSize(),
@@ -354,9 +346,7 @@ fun LibrarySongsScreen(
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     val songsCountText =
-                                        if (filteredSongs.size ==
-                                            1
-                                        ) {
+                                        if (filteredSongs.size == 1) {
                                             "1 ${stringResource(R.string.song_singular)}"
                                         } else {
                                             "${filteredSongs.size} ${stringResource(R.string.songs)}"
@@ -417,8 +407,6 @@ fun LibrarySongsScreen(
                     val song = songWrapper.item
                     val isActive = song.id == mediaMetadata?.id
 
-                    // Issue 7: active song gets fully rounded shape + artwork-based color
-                    // inactive songs use theme color and are more rounded than before
                     val activeCardColor =
                         rememberArtworkCardColor(
                             thumbnailUrl = song.song.thumbnailUrl,
@@ -426,7 +414,6 @@ fun LibrarySongsScreen(
                         )
                     val inactiveCardColor = MaterialTheme.colorScheme.surfaceContainerLow
 
-                    // Issue 6: divider between cards visible in pure black dark theme
                     val showDivider = isDarkTheme && pureBlack && index > 0
                     if (showDivider) {
                         HorizontalDivider(
@@ -436,7 +423,6 @@ fun LibrarySongsScreen(
                         )
                     }
 
-                    // Issue 7: Active corners 36.dp, inactive 24.dp
                     val cornerRadius = if (isActive) 36.dp else 24.dp
                     val topPadding = if (index == 0 || showDivider) 0.dp else 8.dp
 
@@ -475,7 +461,6 @@ fun LibrarySongsScreen(
                                 ).padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        // Thumbnail — fully circular when active
                         val thumbCorner = if (isActive) 26.dp else 10.dp
                         ItemThumbnail(
                             thumbnailUrl = song.song.thumbnailUrl,
@@ -491,7 +476,6 @@ fun LibrarySongsScreen(
 
                         Spacer(modifier = Modifier.width(14.dp))
 
-                        // Song Details (Issue 7: onPrimaryContainer on active dynamic background for legibility)
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = song.song.title,
@@ -519,7 +503,6 @@ fun LibrarySongsScreen(
                             )
                         }
 
-                        // Play/Wave indicators & duration pill
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -533,7 +516,6 @@ fun LibrarySongsScreen(
                                 )
                             }
 
-                            // Issue 1: Real duration pill using makeTimeString
                             val durationText = makeTimeString(song.song.duration * 1000L)
                             Box(
                                 modifier =
@@ -558,7 +540,6 @@ fun LibrarySongsScreen(
                                 )
                             }
 
-                            // More options
                             IconButton(
                                 onClick = {
                                     menuState.show {
@@ -623,4 +604,13 @@ fun SongSubFilterChip(
             color = contentColor,
         )
     }
+}
+
+@Composable
+private fun rememberArtworkCardColor(
+    thumbnailUrl: String?,
+    fallbackColor: Color,
+): Color {
+    val gradient = rememberArtworkGradient(thumbnailUrl)
+    return gradient.firstOrNull() ?: fallbackColor
 }
