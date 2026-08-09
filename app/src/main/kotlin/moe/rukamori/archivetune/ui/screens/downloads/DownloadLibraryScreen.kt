@@ -65,17 +65,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -114,12 +115,13 @@ fun DownloadLibraryScreen(
     val state by viewModel.screenState.collectAsStateWithLifecycle()
     val playerConnection = LocalPlayerConnection.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(viewModel, playerConnection) {
         viewModel.events.collect { event ->
             when (event) {
                 is DownloadLibraryEvent.Message -> {
-                    snackbarHostState.showSnackbar(navController.context.getString(event.messageRes))
+                    snackbarHostState.showSnackbar(context.getString(event.messageRes))
                 }
 
                 is DownloadLibraryEvent.Navigate -> {
