@@ -10,23 +10,31 @@
 package moe.rukamori.archivetune.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -72,16 +80,28 @@ fun AccountScreen(
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
-            ChipsRow(
-                chips =
-                    listOf(
-                        AccountContentType.PLAYLISTS to stringResource(R.string.filter_playlists),
-                        AccountContentType.ALBUMS to stringResource(R.string.filter_albums),
-                        AccountContentType.ARTISTS to stringResource(R.string.filter_artists),
-                    ),
-                currentValue = selectedContentType,
-                onValueUpdate = { viewModel.setSelectedContentType(it) },
-            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White.copy(alpha = 0.08f))
+                    .border(
+                        width = 1.dp,
+                        color = Color.White.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                ChipsRow(
+                    chips =
+                        listOf(
+                            AccountContentType.PLAYLISTS to stringResource(R.string.filter_playlists),
+                            AccountContentType.ALBUMS to stringResource(R.string.filter_albums),
+                            AccountContentType.ARTISTS to stringResource(R.string.filter_artists),
+                        ),
+                    currentValue = selectedContentType,
+                    onValueUpdate = { viewModel.setSelectedContentType(it) },
+                )
+            }
         }
 
         when (selectedContentType) {
@@ -95,6 +115,14 @@ fun AccountScreen(
                         fillMaxWidth = true,
                         modifier =
                             Modifier
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.White.copy(alpha = 0.06f))
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.White.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
                                 .combinedClickable(
                                     onClick = {
                                         navController.navigate("online_playlist/${item.id}")
@@ -132,6 +160,14 @@ fun AccountScreen(
                         fillMaxWidth = true,
                         modifier =
                             Modifier
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.White.copy(alpha = 0.06f))
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.White.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
                                 .combinedClickable(
                                     onClick = {
                                         navController.navigate("album/${item.id}")
@@ -169,6 +205,14 @@ fun AccountScreen(
                         fillMaxWidth = true,
                         modifier =
                             Modifier
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.White.copy(alpha = 0.06f))
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.White.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
                                 .combinedClickable(
                                     onClick = {
                                         navController.navigate("artist/${item.id}")
@@ -199,6 +243,10 @@ fun AccountScreen(
 
     TopAppBar(
         title = { Text(stringResource(R.string.account)) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White.copy(alpha = 0.08f),
+            scrolledContainerColor = Color.White.copy(alpha = 0.15f)
+        ),
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,
@@ -210,5 +258,6 @@ fun AccountScreen(
                 )
             }
         },
+        scrollBehavior = scrollBehavior
     )
 }
