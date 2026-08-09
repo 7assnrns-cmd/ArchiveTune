@@ -21,7 +21,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +52,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ContainedLoadingIndicator
@@ -415,23 +419,20 @@ fun HistoryScreen(
         }
     }
 
-    // A. When screen opens + user is logged in → fetch remote history in background
     LaunchedEffect("prefetch", isLoggedIn) {
         if (!isLoggedIn) return@LaunchedEffect
         if (remoteHistoryState is RemoteHistoryUiState.Success) return@LaunchedEffect
-        delay(1_000) // wait for screen
+        delay(1_000)
 
         viewModel.fetchRemoteHistorySilent()
     }
 
-    // B. When playback sync happens → retry with backoff
     LaunchedEffect("sync", isLoggedIn) {
         YouTube.historySyncEvent.collect {
             if (!isLoggedIn) return@collect
 
-            // Retry 3 times with increasing delay (handles slow internet)
             repeat(3) { attempt ->
-                delay(3000L * (attempt + 1)) // 3s, 6s, 9s
+                delay(3000L * (attempt + 1))
                 viewModel.fetchRemoteHistorySilent()
                 if (remoteHistoryState is RemoteHistoryUiState.Success) return@collect
             }
@@ -747,6 +748,7 @@ private fun LocalHistoryFeed(
                                     Icon(
                                         painter = painterResource(R.drawable.more_vert),
                                         contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
                                     )
                                 }
                             },
@@ -899,6 +901,7 @@ private fun RemoteHistoryFeed(
                                             Icon(
                                                 painter = painterResource(R.drawable.more_vert),
                                                 contentDescription = null,
+                                                modifier = Modifier.size(24.dp),
                                             )
                                         }
                                     },
@@ -931,14 +934,22 @@ private fun HistorySourceDock(
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth().widthIn(max = 840.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 840.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color.White.copy(alpha = 0.05f))
+                    .border(
+                        BorderStroke(1.dp, Color.White.copy(alpha = 0.10f)),
+                        RoundedCornerShape(24.dp),
+                    )
+                    .padding(20.dp),
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth().padding(20.dp),
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -946,8 +957,8 @@ private fun HistorySourceDock(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Surface(
-                        modifier = Modifier.size(64.dp),
-                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.size(56.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     ) {
@@ -955,7 +966,7 @@ private fun HistorySourceDock(
                             Icon(
                                 painter = painterResource(R.drawable.history),
                                 contentDescription = null,
-                                modifier = Modifier.size(28.dp),
+                                modifier = Modifier.size(24.dp),
                             )
                         }
                     }
@@ -1017,54 +1028,42 @@ private fun HistorySongGroupItem(
     isActive: Boolean = false,
     content: @Composable (containerColor: Color) -> Unit,
 ) {
-    val outerShape = MaterialTheme.shapes.extraLarge
-    val innerCorner = remember { CornerSize(4.dp) }
+    val outerShape = RoundedCornerShape(16.dp)
+    val innerCorner = CornerSize(4.dp)
     val shape =
         remember(index, lastIndex, outerShape, innerCorner) {
             when {
-                lastIndex == 0 -> {
-                    outerShape
-                }
-
-                index == 0 -> {
-                    outerShape.copy(
-                        bottomStart = innerCorner,
-                        bottomEnd = innerCorner,
-                    )
-                }
-
-                index == lastIndex -> {
-                    outerShape.copy(
-                        topStart = innerCorner,
-                        topEnd = innerCorner,
-                    )
-                }
-
-                else -> {
+                lastIndex == 0 -> outerShape
+                index == 0 -> outerShape.copy(bottomStart = innerCorner, bottomEnd = innerCorner)
+                index == lastIndex -> outerShape.copy(topStart = innerCorner, topEnd = innerCorner)
+                else ->
                     outerShape.copy(
                         topStart = innerCorner,
                         topEnd = innerCorner,
                         bottomStart = innerCorner,
                         bottomEnd = innerCorner,
                     )
-                }
             }
         }
 
     val containerColor =
         when {
-            isActive -> MaterialTheme.colorScheme.secondaryContainer
-            isSelected -> MaterialTheme.colorScheme.surfaceContainerHighest
-            else -> MaterialTheme.colorScheme.surfaceContainerLow
+            isActive -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+            isSelected -> Color.White.copy(alpha = 0.12f)
+            else -> Color.White.copy(alpha = 0.05f)
         }
 
-    Surface(
+    Box(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
-        shape = shape,
-        color = containerColor,
+                .padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
+                .clip(shape)
+                .background(containerColor)
+                .border(
+                    BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+                    shape,
+                ),
     ) {
         content(containerColor)
     }
@@ -1084,11 +1083,13 @@ private fun HistorySectionHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Surface(
-                modifier = Modifier.size(12.dp),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.primary,
-            ) {}
+            Box(
+                modifier =
+                    Modifier
+                        .size(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.primary),
+            )
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
@@ -1128,7 +1129,7 @@ private fun HistorySourceSelector(
                 modifier =
                     Modifier
                         .weight(1f)
-                        .height(52.dp),
+                        .height(48.dp),
                 shapes =
                     when (index) {
                         0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
@@ -1137,7 +1138,7 @@ private fun HistorySourceSelector(
                     },
                 colors =
                     ToggleButtonDefaults.toggleButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        containerColor = Color.White.copy(alpha = 0.05f),
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -1174,20 +1175,20 @@ private fun HistoryStateCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .heightIn(min = 360.dp),
+                .heightIn(min = 320.dp),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 40.dp),
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp),
         ) {
             if (loading) {
                 ContainedLoadingIndicator()
             } else if (icon != null) {
                 val stateShape = MaterialShapes.Cookie9Sided.toShape()
                 Surface(
-                    modifier = Modifier.size(88.dp),
+                    modifier = Modifier.size(72.dp),
                     shape = stateShape,
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -1196,7 +1197,7 @@ private fun HistoryStateCard(
                         Icon(
                             painter = painterResource(icon),
                             contentDescription = null,
-                            modifier = Modifier.size(36.dp),
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                 }
@@ -1265,6 +1266,7 @@ private fun BoxScope.HistorySelectionToolbar(
                     Icon(
                         painter = painterResource(R.drawable.more_vert),
                         contentDescription = stringResource(R.string.more_options),
+                        modifier = Modifier.size(24.dp),
                     )
                 }
             },
@@ -1300,6 +1302,7 @@ private fun HistoryToolbarAction(
         Icon(
             painter = painterResource(icon),
             contentDescription = null,
+            modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
