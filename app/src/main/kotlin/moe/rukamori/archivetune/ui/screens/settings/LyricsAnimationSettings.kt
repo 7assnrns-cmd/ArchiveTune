@@ -16,16 +16,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import moe.rukamori.archivetune.LocalPlayerAwareWindowInsets
 import moe.rukamori.archivetune.R
@@ -34,23 +35,34 @@ import moe.rukamori.archivetune.constants.LyricsV2FillTransitionWidthKey
 import moe.rukamori.archivetune.constants.LyricsV2GlowFactorKey
 import moe.rukamori.archivetune.constants.LyricsV2LrcBounceEnabledKey
 import moe.rukamori.archivetune.ui.component.IconButton
-import moe.rukamori.archivetune.ui.component.PreferenceEntry
 import moe.rukamori.archivetune.ui.component.PreferenceGroup
+import moe.rukamori.archivetune.ui.component.SliderPreference
+import moe.rukamori.archivetune.ui.component.SwitchPreference
 import moe.rukamori.archivetune.ui.utils.backToMain
 import moe.rukamori.archivetune.utils.rememberPreference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LyricsAnimationSettings(navController: NavController) {
-    val (bounceFactor, onBounceFactorChange) = rememberPreference(LyricsV2BounceFactorKey, defaultValue = 1f)
-    val (glowFactor, onGlowFactorChange) = rememberPreference(LyricsV2GlowFactorKey, defaultValue = 1f)
-    val (fillTransitionWidth, onFillTransitionWidthChange) = rememberPreference(LyricsV2FillTransitionWidthKey, defaultValue = 8f)
-    val (lrcBounceEnabled, onLrcBounceEnabledChange) = rememberPreference(LyricsV2LrcBounceEnabledKey, defaultValue = true)
+    val (bounceFactor, onBounceFactorChange) =
+        rememberPreference(LyricsV2BounceFactorKey, defaultValue = 1f)
+    val (glowFactor, onGlowFactorChange) =
+        rememberPreference(LyricsV2GlowFactorKey, defaultValue = 1f)
+    val (fillTransitionWidth, onFillTransitionWidthChange) =
+        rememberPreference(LyricsV2FillTransitionWidthKey, defaultValue = 8f)
+    val (lrcBounceEnabled, onLrcBounceEnabledChange) =
+        rememberPreference(LyricsV2LrcBounceEnabledKey, defaultValue = true)
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.lyrics_animation_style)) },
+                title = {
+                    Text(
+                        text = stringResource(R.string.lyrics_animation_style),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = navController::navigateUp,
@@ -62,6 +74,11 @@ fun LyricsAnimationSettings(navController: NavController) {
                         )
                     }
                 },
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
             )
         },
     ) { innerPadding ->
@@ -71,70 +88,66 @@ fun LyricsAnimationSettings(navController: NavController) {
             modifier =
                 Modifier
                     .padding(top = topPadding)
-                    .verticalScroll(rememberScrollState())
                     .windowInsetsPadding(
                         LocalPlayerAwareWindowInsets.current.only(
                             WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
                         ),
-                    ).padding(bottom = SettingsDimensions.ScreenBottomPadding),
+                    ).verticalScroll(rememberScrollState())
+                    .padding(bottom = SettingsDimensions.ScreenBottomPadding),
         ) {
-            PreferenceGroup(title = "Animation Tuning") {
+            PreferenceGroup(title = stringResource(R.string.animation_tuning)) {
                 item {
-                    PreferenceEntry(
-                        title = { Text("Line Bounce Effect") },
-                        description = "Enable bounce animation for line-synced (LRC) lyrics",
+                    SwitchPreference(
+                        title = { Text(stringResource(R.string.line_bounce_effect)) },
+                        description = stringResource(R.string.line_bounce_effect_desc),
                         icon = { Icon(painterResource(R.drawable.animation), null) },
-                        trailingContent = {
-                            Switch(
-                                checked = lrcBounceEnabled,
-                                onCheckedChange = onLrcBounceEnabledChange,
-                            )
-                        },
+                        checked = lrcBounceEnabled,
+                        onCheckedChange = onLrcBounceEnabledChange,
                     )
                 }
 
                 item {
-                    PreferenceEntry(
-                        title = { Text("Bounce Amplitude") },
-                        description = "Adjust the bounce effect when a word is sung (${(bounceFactor * 100).toInt()}%)",
+                    SliderPreference(
+                        title = { Text(stringResource(R.string.bounce_amplitude)) },
+                        description =
+                            stringResource(
+                                R.string.bounce_amplitude_desc,
+                                (bounceFactor * 100).toInt(),
+                            ),
                         icon = { Icon(painterResource(R.drawable.animation), null) },
-                        content = {
-                            Slider(
-                                value = bounceFactor,
-                                onValueChange = onBounceFactorChange,
-                                valueRange = 0f..2f,
-                            )
-                        },
+                        value = bounceFactor,
+                        onValueChange = onBounceFactorChange,
+                        valueRange = 0f..2f,
                     )
                 }
 
                 item {
-                    PreferenceEntry(
-                        title = { Text("Glow Intensity") },
-                        description = "Adjust the glow brightness of the sung word (${(glowFactor * 100).toInt()}%)",
+                    SliderPreference(
+                        title = { Text(stringResource(R.string.glow_intensity)) },
+                        description =
+                            stringResource(
+                                R.string.glow_intensity_desc,
+                                (glowFactor * 100).toInt(),
+                            ),
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        content = {
-                            Slider(
-                                value = glowFactor,
-                                onValueChange = onGlowFactorChange,
-                                valueRange = 0f..2f,
-                            )
-                        },
+                        value = glowFactor,
+                        onValueChange = onGlowFactorChange,
+                        valueRange = 0f..2f,
                     )
                 }
 
                 item {
-                    PreferenceEntry(
-                        title = { Text("Fill Transition Smoothness") },
-                        description = "Adjust the gradient edge width of the liquid fill effect (${fillTransitionWidth.toInt()} dp)",
+                    SliderPreference(
+                        title = { Text(stringResource(R.string.fill_transition_smoothness)) },
+                        description =
+                            stringResource(
+                                R.string.fill_transition_smoothness_desc,
+                                fillTransitionWidth.toInt(),
+                            ),
                         icon = { Icon(painterResource(R.drawable.lyrics), null) },
-                        content = {
-                            Slider(
-                                value = fillTransitionWidth,
-                                onValueChange = onFillTransitionWidthChange,
-                                valueRange = 2f..24f,
-                            )
-                        },
+                        value = fillTransitionWidth,
+                        onValueChange = onFillTransitionWidthChange,
+                        valueRange = 2f..24f,
                     )
                 }
             }
