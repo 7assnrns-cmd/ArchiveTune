@@ -7,10 +7,13 @@
 
 package moe.rukamori.archivetune.ui.screens
 
+import android.graphics.Color as AndroidColor
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +42,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
@@ -121,7 +122,6 @@ import moe.rukamori.archivetune.viewmodels.StatsViewModel
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import android.graphics.Color as AndroidColor
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -280,6 +280,10 @@ fun StatsScreen(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = Color.White.copy(alpha = 0.05f),
+                    scrolledContainerColor = Color.White.copy(alpha = 0.12f)
+                ),
                 scrollBehavior = topAppBarScrollBehavior,
             )
         },
@@ -672,9 +676,13 @@ private fun StatsFilterPanel(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .border(
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                    shape = MaterialTheme.shapes.large
+                ),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = Color.White.copy(alpha = 0.08f),
     ) {
         Column(
             modifier = Modifier.padding(vertical = 8.dp),
@@ -838,10 +846,14 @@ private fun RankedSongItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 1.dp),
+                .padding(horizontal = 16.dp, vertical = 1.dp)
+                .border(
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+                    shape = rowShapes.shape
+                ),
         colors =
             ListItemDefaults.segmentedColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                containerColor = Color.White.copy(alpha = 0.06f),
             ),
         leadingContent = {
             Row(
@@ -928,9 +940,15 @@ private fun StatsYearPickerDialog(
                                     if (isSelected) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                        Color.White.copy(alpha = 0.08f)
                                     },
-                                ).clickable { onSelectYear(year) }
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isSelected) Color.Transparent else Color.White.copy(alpha = 0.12f),
+                                    shape = RoundedCornerShape(18.dp)
+                                )
+                                .clickable { onSelectYear(year) }
                                 .padding(horizontal = 20.dp, vertical = 12.dp),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
@@ -963,9 +981,13 @@ private fun StatsSummarySection(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .border(
+                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                    shape = MaterialTheme.shapes.extraLarge
+                ),
         shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = Color.White.copy(alpha = 0.08f),
     ) {
         BoxWithConstraints(modifier = Modifier.padding(20.dp)) {
             val expanded = maxWidth >= 680.dp
@@ -999,7 +1021,7 @@ private fun StatsSummarySection(
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     StatsListeningTimeHero(summary = summary)
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    HorizontalDivider(color = Color.White.copy(alpha = 0.12f))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         StatMetricCard(
                             label = stringResource(R.string.stats_total_plays),
@@ -1029,9 +1051,14 @@ private fun StatsListeningTimeHero(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
+                shape = MaterialTheme.shapes.large
+            ),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = Color.White.copy(alpha = 0.12f),
     ) {
         Column(
             modifier = Modifier.padding(24.dp),
@@ -1040,13 +1067,13 @@ private fun StatsListeningTimeHero(
             Text(
                 text = stringResource(R.string.stats_total_time_listened),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = makeTimeString(summary.totalTimeListened) ?: "-",
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
     }
@@ -1133,11 +1160,16 @@ private fun StatsHighlightCard(
     useCircleShape: Boolean,
     onClick: () -> Unit,
 ) {
-    ElevatedCard(
+    Surface(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+                shape = MaterialTheme.shapes.large
+            ),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.elevatedCardColors(),
+        color = Color.White.copy(alpha = 0.08f),
     ) {
         Row(
             modifier =
@@ -1239,10 +1271,13 @@ private fun SegmentedArtistChart(
             )
         }
 
-    ElevatedCard(
-        modifier = modifier,
+    Surface(
+        modifier = modifier.border(
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+            shape = MaterialTheme.shapes.extraLarge
+        ),
         shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.elevatedCardColors(),
+        color = Color.White.copy(alpha = 0.08f),
     ) {
         Row(
             modifier =
@@ -1371,12 +1406,15 @@ private fun ListeningByDayChart(
     val slotMap = remember(slots) { slots.associateBy { it.slot } }
     val maxTime = remember(slots) { slots.maxOfOrNull { it.timeListened } ?: 1L }
     val primaryColor = MaterialTheme.colorScheme.primary
-    val containerColor = MaterialTheme.colorScheme.secondaryContainer
+    val containerColor = Color.White.copy(alpha = 0.15f)
 
-    ElevatedCard(
-        modifier = modifier,
+    Surface(
+        modifier = modifier.border(
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+            shape = MaterialTheme.shapes.extraLarge
+        ),
         shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.elevatedCardColors(),
+        color = Color.White.copy(alpha = 0.08f),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
@@ -1442,7 +1480,7 @@ private fun ListeningByHourChart(
     val maxTime = remember(slots) { slots.maxOfOrNull { it.timeListened } ?: 1L }
     val peakSlot = remember(slots) { slots.maxByOrNull { it.timeListened }?.slot }
     val primaryColor = MaterialTheme.colorScheme.primary
-    val containerColor = MaterialTheme.colorScheme.primaryContainer
+    val containerColor = Color.White.copy(alpha = 0.20f)
 
     val peakLabel =
         remember(peakSlot) {
@@ -1457,10 +1495,13 @@ private fun ListeningByHourChart(
             }
         }
 
-    ElevatedCard(
-        modifier = modifier,
+    Surface(
+        modifier = modifier.border(
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
+            shape = MaterialTheme.shapes.extraLarge
+        ),
         shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.elevatedCardColors(),
+        color = Color.White.copy(alpha = 0.08f),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -1491,7 +1532,7 @@ private fun ListeningByHourChart(
                     val time = slotMap[hour]?.timeListened ?: 0L
                     val fraction = time.toFloat() / maxTime
                     val isPeak = hour == peakSlot
-                    val barColor = if (isPeak) primaryColor else containerColor.copy(alpha = 0.6f + fraction * 0.4f)
+                    val barColor = if (isPeak) primaryColor else containerColor.copy(alpha = 0.2f + fraction * 0.8f)
                     val animatedFraction by animateFloatAsState(
                         targetValue = fraction,
                         animationSpec = tween(400),
