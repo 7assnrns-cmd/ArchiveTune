@@ -12,6 +12,7 @@ package moe.rukamori.archivetune.ui.screens
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -441,6 +443,14 @@ fun AlbumScreen(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.White.copy(alpha = 0.05f))
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.White.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
                                 .combinedClickable(
                                     onClick = {
                                         if (!selection) {
@@ -475,7 +485,10 @@ fun AlbumScreen(
                         )
                     }
                     item(key = "other_versions_list") {
-                        LazyRow {
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             items(
                                 items = otherVersions.distinctBy { it.id },
                                 key = { it.id },
@@ -487,6 +500,13 @@ fun AlbumScreen(
                                     coroutineScope = scope,
                                     modifier =
                                         Modifier
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(Color.White.copy(alpha = 0.06f))
+                                            .border(
+                                                width = 1.dp,
+                                                color = Color.White.copy(alpha = 0.12f),
+                                                shape = RoundedCornerShape(16.dp)
+                                            )
                                             .combinedClickable(
                                                 onClick = { navController.navigate("album/${item.id}") },
                                                 onLongClick = {
@@ -665,8 +685,8 @@ fun AlbumScreen(
                 )
             } else {
                 TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
                 )
             }
 
