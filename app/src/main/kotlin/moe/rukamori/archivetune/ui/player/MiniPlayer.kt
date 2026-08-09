@@ -7,7 +7,9 @@
 
 package moe.rukamori.archivetune.ui.player
 
+import android.os.Build
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -192,6 +195,16 @@ private fun NewMiniPlayer(
             }
         } ?: MaterialTheme.shapes.extraLarge
 
+    // حاشية إضافية مخصصة لإعطاء حدود زجاجية متوهجة بشكل ناعم
+    val glassBorderBrush = remember {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color.White.copy(alpha = 0.35f),
+                Color.White.copy(alpha = 0.05f)
+            )
+        )
+    }
+
     SwipeableMiniPlayerBox(
         modifier = modifier,
         contentMaxWidth = if (isPairedWithNavigation) NavigationBarMaxWidth else null,
@@ -209,7 +222,12 @@ private fun NewMiniPlayer(
                     .fillMaxWidth()
                     .height(MiniPlayerHeight)
                     .offset { IntOffset(offsetX.roundToInt(), 0) }
-                    .clip(miniPlayerShape),
+                    .clip(miniPlayerShape)
+                    .border(
+                        width = 1.dp,
+                        brush = glassBorderBrush,
+                        shape = miniPlayerShape
+                    ),
         ) {
             MiniPlayerBackground(
                 style = effectiveBackgroundStyle,
@@ -284,16 +302,23 @@ private fun MiniPlayerBackground(
     palette: MiniPlayerBackgroundPalette?,
     modifier: Modifier = Modifier,
 ) {
+    val supportsBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
     when (style) {
         MiniPlayerBackgroundStyle.THEME -> {
             Box(
-                modifier = modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                modifier = modifier
+                    .then(if (supportsBlur) Modifier.blur(20.dp) else Modifier)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.75f)),
             )
         }
 
         MiniPlayerBackgroundStyle.GRADIENT -> {
             val colors = requireNotNull(palette)
-            Box(modifier = modifier) {
+            Box(
+                modifier = modifier
+                    .then(if (supportsBlur) Modifier.blur(25.dp) else Modifier)
+            ) {
                 Box(
                     modifier =
                         Modifier
@@ -302,18 +327,26 @@ private fun MiniPlayerBackground(
                                 Brush.verticalGradient(
                                     colorStops =
                                         arrayOf(
-                                            0f to colors.first.copy(alpha = 0.95f),
-                                            0.52f to colors.second.copy(alpha = 0.82f),
-                                            1f to colors.third.copy(alpha = 0.72f),
+                                            0f to colors.first.copy(alpha = 0.70f),
+                                            0.52f to colors.second.copy(alpha = 0.55f),
+                                            1f to colors.third.copy(alpha = 0.40f),
                                         ),
                                 ),
                             ),
                 )
+                // طبقة التظليل الحليبية Glass Overlay
                 Box(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.32f)),
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.12f),
+                                        Color.Black.copy(alpha = 0.25f)
+                                    )
+                                )
+                            ),
                 )
             }
         }
@@ -322,43 +355,53 @@ private fun MiniPlayerBackground(
             val colors = requireNotNull(palette)
             Box(
                 modifier =
-                    modifier.drawWithCache {
-                        val width = size.width
-                        val height = size.height
-                        val startGlow =
-                            Brush.radialGradient(
-                                colors = listOf(colors.first.copy(alpha = 0.82f), colors.first.copy(alpha = 0.38f), Color.Transparent),
-                                center = Offset(width * 0.12f, height * 0.42f),
-                                radius = width * 0.72f,
-                            )
-                        val endGlow =
-                            Brush.radialGradient(
-                                colors = listOf(colors.second.copy(alpha = 0.78f), colors.second.copy(alpha = 0.34f), Color.Transparent),
-                                center = Offset(width * 0.88f, height * 0.58f),
-                                radius = width * 0.72f,
-                            )
-                        val topGlow =
-                            Brush.radialGradient(
-                                colors = listOf(colors.third.copy(alpha = 0.58f), Color.Transparent),
-                                center = Offset(width * 0.52f, height * 0.05f),
-                                radius = width * 0.54f,
-                            )
-                        val bottomGlow =
-                            Brush.radialGradient(
-                                colors = listOf(colors.fourth.copy(alpha = 0.46f), Color.Transparent),
-                                center = Offset(width * 0.46f, height * 1.05f),
-                                radius = width * 0.54f,
-                            )
+                    modifier
+                        .then(if (supportsBlur) Modifier.blur(30.dp) else Modifier)
+                        .drawWithCache {
+                            val width = size.width
+                            val height = size.height
+                            val startGlow =
+                                Brush.radialGradient(
+                                    colors = listOf(colors.first.copy(alpha = 0.75f), colors.first.copy(alpha = 0.30f), Color.Transparent),
+                                    center = Offset(width * 0.12f, height * 0.42f),
+                                    radius = width * 0.72f,
+                                )
+                            val endGlow =
+                                Brush.radialGradient(
+                                    colors = listOf(colors.second.copy(alpha = 0.70f), colors.second.copy(alpha = 0.25f), Color.Transparent),
+                                    center = Offset(width * 0.88f, height * 0.58f),
+                                    radius = width * 0.72f,
+                                )
+                            val topGlow =
+                                Brush.radialGradient(
+                                    colors = listOf(colors.third.copy(alpha = 0.50f), Color.Transparent),
+                                    center = Offset(width * 0.52f, height * 0.05f),
+                                    radius = width * 0.54f,
+                                )
+                            val bottomGlow =
+                                Brush.radialGradient(
+                                    colors = listOf(colors.fourth.copy(alpha = 0.40f), Color.Transparent),
+                                    center = Offset(width * 0.46f, height * 1.05f),
+                                    radius = width * 0.54f,
+                                )
 
-                        onDrawBehind {
-                            drawRect(Color.Black)
-                            drawRect(startGlow)
-                            drawRect(endGlow)
-                            drawRect(topGlow)
-                            drawRect(bottomGlow)
-                            drawRect(Color.Black.copy(alpha = 0.24f))
-                        }
-                    },
+                            onDrawBehind {
+                                drawRect(Color.Black.copy(alpha = 0.45f))
+                                drawRect(startGlow)
+                                drawRect(endGlow)
+                                drawRect(topGlow)
+                                drawRect(bottomGlow)
+                                // إضافة انعكاس الضوء الضبابي (Glass Specular Highlight)
+                                drawRect(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.15f),
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
+                            }
+                        },
             )
         }
     }
