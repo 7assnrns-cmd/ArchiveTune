@@ -91,15 +91,36 @@ fun NavGraphBuilder.navigationBuilder(
     searchScrollConnection: NestedScrollConnection? = null,
     onlineSearchSort: OnlineSearchSort = OnlineSearchSort.DEFAULT,
 ) {
-    composable(Screens.Home.route) {
+    val enterAnim = if (disableAnimations) null else slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(300)) + fadeIn(animationSpec = tween(300))
+    val exitAnim = if (disableAnimations) null else slideOutHorizontally(targetOffsetX = { -it / 3 }, animationSpec = tween(300)) + fadeOut(animationSpec = tween(300))
+    val popEnterAnim = if (disableAnimations) null else slideInHorizontally(initialOffsetX = { -it / 3 }, animationSpec = tween(300)) + fadeIn(animationSpec = tween(300))
+    val popExitAnim = if (disableAnimations) null else slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(300)) + fadeOut(animationSpec = tween(300))
+
+    composable(
+        route = Screens.Home.route,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         HomeScreen(navController, headerScrollConnection = homeScrollConnection)
     }
     composable(
-        Screens.Library.route,
+        route = Screens.Library.route,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         LibraryScreen(navController)
     }
-    composable(Screens.Search.route) {
+    composable(
+        route = Screens.Search.route,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         SearchScreen(
             navController = navController,
             onSearchClick = {
@@ -110,16 +131,40 @@ fun NavGraphBuilder.navigationBuilder(
             headerScrollConnection = searchScrollConnection,
         )
     }
-    composable("local_songs") {
+    composable(
+        route = "local_songs",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         LocalSongScreen(navController)
     }
-    composable("history") {
+    composable(
+        route = "history",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         HistoryScreen(navController)
     }
-    composable("stats") {
+    composable(
+        route = "stats",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         StatsScreen(navController)
     }
-    composable("news") {
+    composable(
+        route = "news",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         NewsScreen(navController)
     }
     composable(
@@ -128,6 +173,10 @@ fun NavGraphBuilder.navigationBuilder(
             listOf(
                 navArgument("newsId") { type = NavType.StringType },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         ViewNewsScreen(navController)
     }
@@ -140,6 +189,10 @@ fun NavGraphBuilder.navigationBuilder(
                     defaultValue = -1
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) { backStackEntry ->
         val selectedYear = backStackEntry.arguments?.getInt("year")?.takeIf { it > 0 }
         YearInMusicScreen(
@@ -147,23 +200,59 @@ fun NavGraphBuilder.navigationBuilder(
             initialYear = selectedYear,
         )
     }
-    composable(MusicRecognitionRoute) {
+    composable(
+        route = MusicRecognitionRoute,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         MusicRecognitionScreen(navController)
     }
-    composable(MusicRecognitionDetailsRoute) { backStackEntry ->
+    composable(
+        route = MusicRecognitionDetailsRoute,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) { backStackEntry ->
         val encodedTrack = backStackEntry.arguments?.getString("encodedTrack").orEmpty()
         MusicRecognitionDetailsScreen(navController, encodedTrack)
     }
-    composable(Screens.MoodAndGenres.route) {
+    composable(
+        route = Screens.MoodAndGenres.route,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         MoodAndGenresScreen(navController)
     }
-    composable("account") {
+    composable(
+        route = "account",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         AccountScreen(navController, scrollBehavior)
     }
-    composable("new_release") {
+    composable(
+        route = "new_release",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         NewReleaseScreen(navController, scrollBehavior)
     }
-    composable("charts_screen") {
+    composable(
+        route = "charts_screen",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         ChartsScreen(navController)
     }
     composable(
@@ -174,6 +263,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         BrowseScreen(
             navController,
@@ -235,6 +328,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         AlbumScreen(navController, scrollBehavior)
     }
@@ -246,6 +343,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         ArtistScreen(navController, scrollBehavior)
     }
@@ -257,6 +358,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         ArtistSongsScreen(navController, scrollBehavior)
     }
@@ -268,6 +373,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         ArtistAlbumsScreen(navController, scrollBehavior)
     }
@@ -287,6 +396,10 @@ fun NavGraphBuilder.navigationBuilder(
                     nullable = true
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         ArtistItemsScreen(navController, scrollBehavior)
     }
@@ -298,6 +411,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         OnlinePlaylistScreen(navController, scrollBehavior)
     }
@@ -309,6 +426,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         LocalPlaylistScreen(navController, scrollBehavior)
     }
@@ -320,6 +441,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         SpotifyPlaylistScreen(navController, scrollBehavior)
     }
@@ -335,6 +460,10 @@ fun NavGraphBuilder.navigationBuilder(
                     defaultValue = "downloaded"
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         AutoPlaylistScreen(navController, scrollBehavior)
     }
@@ -346,6 +475,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         CachePlaylistScreen(navController, scrollBehavior)
     }
@@ -357,6 +490,10 @@ fun NavGraphBuilder.navigationBuilder(
                     type = NavType.StringType
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         TopPlaylistScreen(navController, scrollBehavior)
     }
@@ -373,87 +510,247 @@ fun NavGraphBuilder.navigationBuilder(
                     nullable = true
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) {
         YouTubeBrowseScreen(navController)
     }
-    composable("settings") {
+    composable(
+        route = "settings",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         SettingsScreen(navController, latestVersionName())
     }
-    composable("settings/account") {
+    composable(
+        route = "settings/account",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         AccountSettings(navController, latestVersionName())
     }
-    composable("settings/hidden_playlists") {
+    composable(
+        route = "settings/hidden_playlists",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         HiddenPlaylistsScreen(navController)
     }
-    composable("settings/appearance") {
+    composable(
+        route = "settings/appearance",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         AppearanceSettings(navController)
     }
-    composable("settings/appearance/icon") {
+    composable(
+        route = "settings/appearance/icon",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         IconScreen(navController)
     }
-    composable("settings/appearance/aod_customized") {
+    composable(
+        route = "settings/appearance/aod_customized",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         AodCustomizedScreen(navController)
     }
-    composable("settings/appearance/palette_picker") {
+    composable(
+        route = "settings/appearance/palette_picker",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         PalettePickerScreen(navController)
     }
-    composable("settings/appearance/lyrics_animations") {
+    composable(
+        route = "settings/appearance/lyrics_animations",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         LyricsAnimationSettings(navController)
     }
-    composable("settings/appearance/theme_creator") {
+    composable(
+        route = "settings/appearance/theme_creator",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         ThemeCreatorScreen(navController)
     }
-    composable("settings/content") {
+    composable(
+        route = "settings/content",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         ContentSettings(navController)
     }
-    composable("settings/lyrics") {
+    composable(
+        route = "settings/lyrics",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         LyricsSettings(navController)
     }
-    composable("settings/internet") {
+    composable(
+        route = "settings/internet",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         InternetSettings(navController)
     }
-    composable("settings/player") {
+    composable(
+        route = "settings/player",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         PlayerSettings(navController)
     }
-    composable("settings/player/chiper") {
+    composable(
+        route = "settings/player/chiper",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         ChiperSettings(navController)
     }
-    composable("settings/storage") {
+    composable(
+        route = "settings/storage",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         StorageSettings(navController)
     }
-    composable("settings/privacy") {
+    composable(
+        route = "settings/privacy",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         PrivacySettings(navController)
     }
-    composable("settings/backup_restore") {
+    composable(
+        route = "settings/backup_restore",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         BackupAndRestore(navController)
     }
-    composable("settings/discord") {
+    composable(
+        route = "settings/discord",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         DiscordSettings(navController)
     }
-    composable("settings/integration") {
+    composable(
+        route = "settings/integration",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         IntegrationScreen(navController)
     }
-    composable("settings/ai_integration") {
+    composable(
+        route = "settings/ai_integration",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         AiIntegrationSettings(navController)
     }
-    composable("settings/music_together") {
+    composable(
+        route = "settings/music_together",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         MusicTogetherScreen(navController)
     }
-    composable("settings/lastfm") {
+    composable(
+        route = "settings/lastfm",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         LastFMSettings(navController)
     }
-    composable("settings/discord/experimental") {
+    composable(
+        route = "settings/discord/experimental",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         moe.rukamori.archivetune.ui.screens.settings
             .DiscordExperimental(navController)
     }
-    composable("settings/misc") {
+    composable(
+        route = "settings/misc",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         DebugSettings(navController)
     }
-    composable("settings/logcat") {
+    composable(
+        route = "settings/logcat",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         LogcatScreen(navController)
     }
     if (BuildConfig.UPDATER_AVAILABLE) {
-        composable("settings/update") {
+        composable(
+            route = "settings/update",
+            enterTransition = { enterAnim },
+            exitTransition = { exitAnim },
+            popEnterTransition = { popEnterAnim },
+            popExitTransition = { popExitAnim },
+        ) {
             UpdateScreen(navController, onUpToDate = onClearUpdateBadge)
         }
     }
@@ -467,18 +764,40 @@ fun NavGraphBuilder.navigationBuilder(
                     defaultValue = null
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) { backStackEntry ->
         val channelName = backStackEntry.arguments?.getString("channel")
         val channel = UpdateChannel.fromStoredName(channelName, defaultUpdateChannel)
         ChangelogScreen(navController, channel = channel)
     }
-    composable("settings/about") {
+    composable(
+        route = "settings/about",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         AboutScreen(navController)
     }
-    composable(PO_TOKEN_ROUTE) {
+    composable(
+        route = PO_TOKEN_ROUTE,
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         PoTokenScreen(navController)
     }
-    composable("customize_background") {
+    composable(
+        route = "customize_background",
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
+    ) {
         CustomizeBackground(navController)
     }
     composable(
@@ -491,6 +810,10 @@ fun NavGraphBuilder.navigationBuilder(
                     defaultValue = null
                 },
             ),
+        enterTransition = { enterAnim },
+        exitTransition = { exitAnim },
+        popEnterTransition = { popEnterAnim },
+        popExitTransition = { popExitAnim },
     ) { backStackEntry ->
         LoginScreen(
             navController,
